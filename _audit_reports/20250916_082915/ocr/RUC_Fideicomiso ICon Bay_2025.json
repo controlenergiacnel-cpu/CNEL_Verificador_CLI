@@ -1,0 +1,22 @@
+﻿{
+  "pages": 2,
+  "chars_total": 3095,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1915,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 1180,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "Certificado\nRegistro Único de Contribuyentes\nFIDEICOMISO MERCANTIL ICON BAY\nNúmero RUC\n0993240524001\nRazón Social\nRepresentante legal\n • ZION ADMINISTRADORA DE FONDOS Y FIDEICOMISOS S.A.\nEstado\nACTIVO\nRégimen\nGENERAL\nArtesano\nNo registra\n09/12/2019\nFecha de constitución\nInicio de..."
+}

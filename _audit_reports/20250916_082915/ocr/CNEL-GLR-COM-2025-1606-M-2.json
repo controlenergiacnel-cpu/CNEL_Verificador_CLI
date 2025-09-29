@@ -1,0 +1,22 @@
+﻿{
+  "pages": 2,
+  "chars_total": 4164,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 2513,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 1651,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "Memorando Nro. CNEL-GLR-COM-2025-1606-M\nGuayaquil, 04 de julio de 2025\nPARA:\nSra. Mgs. Johanna Griselda Castro Vera\nLíder de Talento Humano, Encargada - GLR \nASUNTO:\nSolicitud de justificación de marcaciones y pago de valores descontados al servidor\nSidney Jared Guerrero Torres \n..."
+}

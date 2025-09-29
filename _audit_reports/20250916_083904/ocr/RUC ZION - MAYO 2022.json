@@ -1,0 +1,22 @@
+﻿{
+  "pages": 2,
+  "chars_total": 2527,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1490,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 1037,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "Certificado\nRegistro Único de Contribuyentes\nZION ADMINISTRADORA DE FONDOS Y\nFIDEICOMISOS S.A.\nNúmero RUC\n0992632771001\nRazón Social\nRepresentante legal\n • SANDOVAL VELA RAFAEL RAMON\nEstado\nACTIVO\nRégimen\nREGIMEN GENERAL\n21/08/2009\nFecha de constitución\nInicio de actividades\n21/0..."
+}

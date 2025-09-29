@@ -1,0 +1,28 @@
+﻿{
+  "pages": 3,
+  "chars_total": 5030,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1972,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 2189,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 3,
+      "chars": 869,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "Duran, 3 de septiembre del 2024.                                          Oficio No. 001-2024                               \n \nSeñor  \nTecnólogo Alejandro Pérez Solano \nAdministrador del Contrato No. CNEL-GLR-AJ-2024-014 \nUnidad de Negocio CNEL EP - Guayas Los Ríos \nPresente.- \nA..."
+}

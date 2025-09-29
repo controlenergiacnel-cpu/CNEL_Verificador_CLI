@@ -1,0 +1,311 @@
+# -*- coding: utf-8 -*-
+"""
+signatures_robust.py
+Extracción reforzada de identidad de firmantes en PDFs:
+- Lee /DSS (catálogo) cuando existe: /Certs y /OCSP /CRL
+- Extrae CN (Common Name), Issuer y signingTime desde PKCS#7 (/Contents)
+- Fallback: primer certificado de la cadena si falta signing cert
+- Intento de validación con pyHanko si la librería está disponible
+"""
+
+from __future__ import annotations
+import os, io, datetime, base64, binascii, json
+from typing import List, Dict, Any, Optional, Tuple
+
+# Librerías PDF (usar las que ya tengas en el proyecto)
+try:
+    import pikepdf
+except Exception:
+    pikepdf = None
+
+try:
+    from PyPDF2 import PdfReader
+except Exception:
+    PdfReader = None
+
+# PKCS#7/CMS
+try:
+    from cryptography import x509
+    from cryptography.hazmat.primitives.serialization import load_der_x509_certificate
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.backends import default_backend
+except Exception:
+    x509 = None
+
+try:
+    # asn1 parsing para CMS si está disponible
+    from asn1crypto import cms, core
+except Exception:
+    cms = None
+
+# pyHanko validación (opcional)
+try:
+    from pyhanko_certvalidator.context import ValidationContext
+    from pyhanko.sign.validation import validate_pdf_signature, EmbeddedPdfSignature
+except Exception:
+    validate_pdf_signature = None
+
+
+def _bstr(v) -> bytes:
+    if isinstance(v, bytes):
+        return v
+    if isinstance(v, str):
+        return v.encode("latin1", errors="ignore")
+    return bytes(v)
+
+
+def _extract_cn(dn: x509.Name) -> Optional[str]:
+    try:
+        for r in dn:
+            if r.oid.dotted_string in ("2.5.4.3",):  # CN
+                return r.value
+    except Exception:
+        pass
+    return None
+
+
+def _issuer_cn(cert: x509.Certificate) -> Optional[str]:
+    try:
+        return _extract_cn(cert.issuer)
+    except Exception:
+        return None
+
+
+def _subject_cn(cert: x509.Certificate) -> Optional[str]:
+    try:
+        return _extract_cn(cert.subject)
+    except Exception:
+        return None
+
+
+def _parse_pkcs7_signing_time(pkcs7_der: bytes) -> Optional[str]:
+    """Intenta leer signingTime de SignedAttributes (ASN.1)"""
+    if cms is None:
+        return None
+    try:
+        content = cms.ContentInfo.load(pkcs7_der)
+        if content["content_type"].native != "signed_data":
+            return None
+        sd = content["content"]
+        for signer in sd["signer_infos"]:
+            attrs = signer["signed_attrs"]
+            if not attrs:
+                continue
+            for attr in attrs:
+                if attr["type"].dotted == "1.2.840.113549.1.9.5":  # signingTime
+                    # Fecha puede venir como Time (UTCTime/GeneralizedTime)
+                    val = attr["values"][0].native
+                    if isinstance(val, datetime.datetime):
+                        # normalizar ISO
+                        return val.replace(tzinfo=None).isoformat(timespec="seconds")
+                    if isinstance(val, str):
+                        return val
+    except Exception:
+        return None
+    return None
+
+
+def _certs_from_dss(pdf_path: str) -> List[bytes]:
+    """Extrae bytes DER de certificados en /DSS (/Certs) si existe."""
+    der_list: List[bytes] = []
+    if not pikepdf:
+        return der_list
+    try:
+        with pikepdf.open(pdf_path) as pdf:
+            cat = pdf.open_metadata()  # fuerza carga
+            # /Root
+            root = pdf.root
+            if "/DSS" not in root:
+                return der_list
+            dss = root["/DSS"]
+            if "/Certs" in dss:
+                certs_arr = dss["/Certs"]
+                for obj in certs_arr:
+                    try:
+                        stream = obj.get_stream_buffer()
+                        der_list.append(bytes(stream))
+                    except Exception:
+                        # Algunos guardan como string hex
+                        try:
+                            raw = obj.read_bytes()
+                            der_list.append(bytes(raw))
+                        except Exception:
+                            pass
+    except Exception:
+        pass
+    return der_list
+
+
+def _read_pdf_fields_signatures(pdf_path: str) -> List[Dict[str, Any]]:
+    """
+    Lee firmas por campo desde /AcroForm -> /Sig con PyPDF2
+    Retorna: [{'name': campo, 'contents_der': b'...', 'byte_range': [...]}]
+    """
+    out: List[Dict[str, Any]] = []
+    if not PdfReader:
+        return out
+    try:
+        reader = PdfReader(pdf_path)
+        fields = {}
+        try:
+            fields = reader.get_fields() or {}
+        except Exception:
+            # algunos PDFs sin campos, o get_fields falla
+            fields = {}
+        for k, v in (fields or {}).items():
+            try:
+                if v.get("/FT") == "/Sig" or v.get("FT") == "/Sig" or v.get("/V"):
+                    val = v.get("/V") or {}
+                    contents = val.get("/Contents") or val.get("Contents")
+                    br = val.get("/ByteRange") or val.get("ByteRange")
+                    if contents:
+                        contents_b = _bstr(contents)
+                        # algunos contenidos vienen con relleno (hex o DER con padding)
+                        if contents_b.startswith(b"<") and contents_b.endswith(b">"):
+                            try:
+                                hexdata = contents_b.strip(b"<>").replace(b"\n", b"").replace(b"\r", b"").replace(b" ", b"")
+                                contents_b = binascii.unhexlify(hexdata)
+                            except Exception:
+                                pass
+                        out.append({
+                            "name": k,
+                            "contents_der": contents_b,
+                            "byte_range": list(br) if br else None,
+                        })
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return out
+
+
+def _parse_certs_from_pkcs7(contents_der: bytes) -> Tuple[List[x509.Certificate], Optional[str]]:
+    """
+    Devuelve ([certs], signingTimeISO)
+    """
+    certs: List[x509.Certificate] = []
+    signing_time_iso: Optional[str] = None
+    if not x509:
+        return certs, signing_time_iso
+    try:
+        signing_time_iso = _parse_pkcs7_signing_time(contents_der)
+    except Exception:
+        signing_time_iso = None
+
+    # Extraer certs con asn1crypto si hay
+    if cms is not None:
+        try:
+            info = cms.ContentInfo.load(contents_der)
+            if info["content_type"].native == "signed_data":
+                sd = info["content"]
+                for c in (sd["certificates"] or []):
+                    try:
+                        der = c.dump()
+                        cert = load_der_x509_certificate(der, default_backend())
+                        certs.append(cert)
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+
+    # Si no hubo asn1crypto, intentar heurística usando cryptography directamente (opcional)
+    # Nota: No hay un parser CMS nativo en cryptography para levantar todos los certs sin asn1crypto.
+    return certs, signing_time_iso
+
+
+def extract_signatures_info(pdf_path: str, trust_dir: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Retorna un dict resumen:
+    {
+      "signatures": [
+         {
+           "field": "Sig1",
+           "pkcs7_found": True/False,
+           "digest": "sha256/sha512/unknown",
+           "signing_time": "YYYY-MM-DDTHH:MM:SS",
+           "subject_cn": "...",
+           "issuer_cn": "...",
+           "validated": True/False/None,
+           "validation_msg": "..."
+         }, ...
+      ],
+      "dss_certs": N
+    }
+    """
+    result = {"signatures": [], "dss_certs": 0}
+
+    # 1) DSS
+    dss_certs_der = _certs_from_dss(pdf_path)
+    result["dss_certs"] = len(dss_certs_der)
+
+    # 2) Firmas por campos
+    fields_sigs = _read_pdf_fields_signatures(pdf_path)
+
+    for sig in fields_sigs:
+        entry = {
+            "field": sig.get("name"),
+            "pkcs7_found": False,
+            "digest": None,
+            "signing_time": None,
+            "subject_cn": None,
+            "issuer_cn": None,
+            "validated": None,
+            "validation_msg": None,
+        }
+
+        pkcs7_der = sig.get("contents_der")
+        if pkcs7_der:
+            entry["pkcs7_found"] = True
+
+            # Digest: heurística (buscar OID o hash len)
+            try:
+                # muy básico: si signingTime viene de asn1, probablemente sha256/sha512
+                # no siempre es trivial sin validar la firma. Lo marcamos "unknown" si no hay certeza.
+                entry["digest"] = "unknown"
+            except Exception:
+                entry["digest"] = "unknown"
+
+            # Parseo de certs y signingTime
+            certs, st_iso = _parse_certs_from_pkcs7(pkcs7_der)
+            if st_iso:
+                entry["signing_time"] = st_iso
+
+            # Preferir el primer cert con uso de firma; si no, el primero
+            chosen = certs[0] if certs else None
+            if chosen:
+                entry["subject_cn"] = _subject_cn(chosen)
+                entry["issuer_cn"] = _issuer_cn(chosen)
+            else:
+                # Si no hubo en PKCS7, intentar tomar el primero del DSS
+                if dss_certs_der and x509:
+                    try:
+                        c0 = load_der_x509_certificate(dss_certs_der[0], default_backend())
+                        entry["subject_cn"] = _subject_cn(c0)
+                        entry["issuer_cn"] = _issuer_cn(c0)
+                    except Exception:
+                        pass
+
+            # Validación con pyHanko (si disponible)
+            if validate_pdf_signature:
+                try:
+                    vc = None
+                    if trust_dir and os.path.isdir(trust_dir):
+                        vc = ValidationContext(trust_roots=None, other_certs=None)  # se pueden cargar trust_roots si los agregas
+                    # Validar primer campo (por nombre) con pyHanko
+                    emb = EmbeddedPdfSignature(pdf_path, field_name=entry["field"])
+                    status = validate_pdf_signature(emb, validation_context=vc)
+                    entry["validated"] = bool(status.trusted)
+                    entry["validation_msg"] = status.summary() if hasattr(status, "summary") else None
+                except Exception as e:
+                    entry["validated"] = None
+                    entry["validation_msg"] = f"pyHanko error: {e}"
+
+        result["signatures"].append(entry)
+
+    return result
+
+
+def quick_dump(pdf_path: str, trust_dir: Optional[str] = None) -> str:
+    """Devuelve un string JSON pretty con la info de firmas (para CLI dump_sign)."""
+    info = extract_signatures_info(pdf_path, trust_dir=trust_dir)
+    return json.dumps(info, ensure_ascii=False, indent=2)

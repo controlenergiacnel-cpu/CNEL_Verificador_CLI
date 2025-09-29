@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+"""
+director.py
+Detección robusta del Director Comercial (variaciones de nombre/apellido e iniciales).
+"""
+
+from __future__ import annotations
+import re
+from typing import List, Dict, Any, Optional
+
+try:
+    from rapidfuzz import fuzz, process
+    _USE_RF = True
+except Exception:
+    import difflib
+    _USE_RF = False
+
+
+def _norm(s: str) -> str:
+    s = s.lower()
+    s = re.sub(r"[^a-záéíóúñü\s\.]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def _initials_of(full: str) -> str:
+    toks = [t for t in re.split(r"\s+", full) if t]
+    initials = [t[0] + "." for t in toks if t]
+    return " ".join(initials)
+
+
+def _score(a: str, b: str) -> float:
+    if _USE_RF:
+        return fuzz.token_set_ratio(a, b) / 100.0
+    # fallback
+    return difflib.SequenceMatcher(None, a, b).ratio()
+
+
+def _variants(canonical: str, aliases: List[str]) -> List[str]:
+    V = []
+    can = _norm(canonical)
+    V.append(can)
+    V.extend(_norm(a) for a in aliases)
+
+    # Combinaciones parciales y con iniciales
+    toks = [t for t in can.split(" ") if t]
+    if len(toks) >= 2:
+        # pares y tríos
+        for i in range(len(toks)):
+            for j in range(i+1, len(toks)):
+                V.append(f"{toks[i]} {toks[j]}")
+        V.append(_initials_of(can))
+        # inicial + apellidos
+        V.append(f"{toks[0][0]}. {toks[-1]}")
+        if len(toks) >= 3:
+            V.append(f"{toks[0][0]}. {toks[1][0]}. {toks[-1]}")
+
+    # Unir únicos
+    uniq = []
+    seen = set()
+    for v in V:
+        if v not in seen:
+            seen.add(v)
+            uniq.append(v)
+    return uniq
+
+
+def find_director(text: str,
+                  canonical: str = "Ricardo Daniel Vera Merchancano",
+                  aliases: Optional[List[str]] = None,
+                  threshold: float = 0.72) -> Dict[str, Any]:
+    """
+    Retorna:
+    {
+      "found": bool,
+      "best_match": "string",
+      "score": 0.0-1.0,
+      "span": [start, end] or None
+    }
+    """
+    if aliases is None:
+        aliases = [
+            "Ricardo D. Vera Merchancano",
+            "Ricardo Vera",
+            "R. D. Vera",
+            "Vera Merchancano",
+            "R. Vera",
+            "Ing. Ricardo Vera",
+        ]
+
+    # Ventanas de texto para búsqueda robusta
+    T = _norm(text)
+    candidates = _variants(canonical, aliases)
+
+    best = {"found": False, "best_match": None, "score": 0.0, "span": None}
+
+    # Estrategia 1: escaneo por ventanas (n-gram por palabras)
+    words = T.split()
+    for win in range(2, 6):  # ventanas de 2 a 5 tokens
+        for i in range(0, max(0, len(words)-win+1)):
+            chunk = " ".join(words[i:i+win])
+            for ref in candidates:
+                sc = _score(chunk, ref)
+                if sc > best["score"]:
+                    best.update({"best_match": chunk, "score": sc, "span": None})
+                    if sc >= threshold:
+                        best["found"] = True
+
+    # Estrategia 2: match directo sobre versión completa
+    for ref in candidates:
+        sc = _score(T, ref)
+        if sc > best["score"]:
+            best.update({"best_match": ref, "score": sc, "span": None})
+            if sc >= threshold:
+                best["found"] = True
+
+    return best

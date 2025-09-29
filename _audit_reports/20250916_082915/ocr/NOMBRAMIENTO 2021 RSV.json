@@ -1,0 +1,25 @@
+﻿{
+  "pages": 2,
+  "chars_total": 2647,
+  "ocr_pages": [
+    1,
+    2
+  ],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1520,
+      "empty": false,
+      "used_ocr": true
+    },
+    {
+      "page": 2,
+      "chars": 1127,
+      "empty": false,
+      "used_ocr": true
+    }
+  ],
+  "used_ocr": true,
+  "method": "easyocr",
+  "sample": "ZION ADMIEYISTRADORA DE FoYDOS Y FIDEICOMISOS SA\nGuayaquil, 20 de octubre del 2021\nSeñor Abogado Rafael Sandoval Vela Presente.\nDe mi consideración:\nPor medio de la presente; comunico a usted que la Junta General de Accionistas de ZION ADMINISTRADORA DE FONDOS Y FIDEICOMISOS S.A...."
+}

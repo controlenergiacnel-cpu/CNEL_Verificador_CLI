@@ -1,0 +1,461 @@
+diff --git a/tools/validate_signs_api.py b/tools/validate_signs_api.py
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/tools/validate_signs_api.py
+@@ -0,0 +1,999 @@
++# -*- coding: utf-8 -*-
++"""
++CNEL_Verificador_CLI — Batch signature validation (untrusted + trusted) + OCR of signature appearances
++
++Requisitos:
++- Windows + PowerShell
++- venv activo
++- pyHanko==0.31.0, pyhanko-certvalidator==0.29.0
++- PyMuPDF (fitz), pillow, pytesseract
++- Tesseract instalado y ruta en TESSERACT_CMD
++
++Uso sugerido desde PowerShell (rutas de ejemplo):
++
++  (venv) PS C:\...\CNEL_Verificador_CLI> python .\tools\validate_signs_api.py "C:\Users\sidney.guerrero\Desktop\documentos_prueba" \
++      --trust "C:\Users\sidney.guerrero\Desktop\trust_certs" \
++      --out   "C:\Users\sidney.guerrero\Desktop\CNEL_Verificador_CLI\reports"
++
++Salidas (dentro de reports\YYYYMMDD_HHMMSS):
++- sig_untrusted.json   → Validación criptográfica sin raíces de confianza
++- sig_trusted.json     → Validación con raíces/intermedias en --trust
++- reporte_lote.txt     → Resumen humano por archivo y por firma
++- apariencias\*.png    → Recortes de la apariencia de firma
++- apariencias\*.txt    → OCR de cada recorte (spa+eng)
++
++Nota: si aún no has agregado BCE/ANF a --trust, el bloque "trusted" puede marcar cadenas como "no confiable".
++"""
++from __future__ import annotations
++import os
++import sys
++import io
++import re
++import json
++import glob
++import enum
++import argparse
++import datetime as dt
++from typing import Any, Dict, List, Optional
++
++# --- Dependencias externas ---
++try:
++    import fitz  # PyMuPDF
++except Exception as e:
++    raise SystemExit(f"ERROR: PyMuPDF no disponible: {e}")
++
++try:
++    from PIL import Image
++except Exception as e:
++    raise SystemExit(f"ERROR: pillow no disponible: {e}")
++
++try:
++    import pytesseract
++except Exception as e:
++    raise SystemExit(f"ERROR: pytesseract no disponible: {e}")
++
++# pyHanko (API)
++try:
++    from pyhanko.pdf_utils.reader import PdfFileReader
++    from pyhanko.sign.validation import validate_pdf_signatures
++except Exception as e:
++    raise SystemExit(
++        "ERROR: pyHanko API no disponible. Verifica pyHanko==0.31.0. Detalle: " + str(e)
++    )
++
++# Certvalidator fork de pyHanko
++try:
++    from pyhanko_certvalidator import ValidationContext
++    from asn1crypto import pem, x509
++except Exception as e:
++    raise SystemExit("ERROR: pyhanko-certvalidator/asn1crypto no disponibles: " + str(e))
++
++# ---------------- Utilidades ----------------
++
++def J(o: Any) -> Any:
++    """Serializador seguro para json.dumps: fechas, enums, Paths, sets, bytes, etc."""
++    if isinstance(o, (dt.datetime, dt.date)):
++        return o.isoformat()
++    if isinstance(o, enum.Enum):
++        return o.name
++    if isinstance(o, (set, frozenset)):
++        return list(o)
++    if isinstance(o, bytes):
++        try:
++            return o.decode('utf-8', errors='replace')
++        except Exception:
++            return str(o)
++    try:
++        import pathlib
++        if isinstance(o, pathlib.Path):
++            return str(o)
++    except Exception:
++        pass
++    return str(o)
++
++
++def now_stamp() -> str:
++    return dt.datetime.now().strftime("%Y%m%d_%H%M%S")
++
++
++def ensure_dir(path: str) -> str:
++    os.makedirs(path, exist_ok=True)
++    return path
++
++
++def list_pdfs(src: str) -> List[str]:
++    pats = ["*.pdf", "*.PDF"]
++    out: List[str] = []
++    for p in pats:
++        out.extend(glob.glob(os.path.join(src, p)))
++    return sorted(out)
++
++
++# ------------- TRUST store loader -------------
++def load_certificates_from_dir(trust_dir: Optional[str]) -> List[x509.Certificate]:
++    certs: List[x509.Certificate] = []
++    if not trust_dir:
++        return certs
++    if not os.path.isdir(trust_dir):
++        print(f"ADVERTENCIA: TRUST no es carpeta válida: {trust_dir}")
++        return certs
++
++    for fname in os.listdir(trust_dir):
++        fpath = os.path.join(trust_dir, fname)
++        if not os.path.isfile(fpath):
++            continue
++        try:
++            data = open(fpath, 'rb').read()
++            if pem.detect(data):
++                for _typ, _hdrs, der_bytes in pem.unarmor(data, multiple=True):
++                    certs.append(x509.Certificate.load(der_bytes))
++            else:
++                certs.append(x509.Certificate.load(data))
++        except Exception as e:
++            print(f"ADVERTENCIA: no se pudo cargar cert {fname}: {e}")
++            continue
++    return certs
++
++
++def make_validation_context(trust_dir: Optional[str]) -> Optional[ValidationContext]:
++    try:
++        roots = load_certificates_from_dir(trust_dir)
++        if not roots:
++            return None
++        vc = ValidationContext(
++            trust_roots=roots,
++            allow_fetching=False,
++            revocation_mode='soft-fail',
++        )
++        return vc
++    except Exception as e:
++        print(f"ADVERTENCIA: no se pudo construir ValidationContext: {e}")
++        return None
++
++
++# ------------- OCR de apariencias de firma -------------
++
++class SigAppearance:
++    def __init__(self, page_number: int, rect, out_png: str, ocr_txt: str):
++        self.page_number = page_number
++        self.rect = rect
++        self.out_png = out_png
++        self.ocr_txt = ocr_txt
++
++    def to_dict(self) -> Dict[str, Any]:
++        return {
++            "page": self.page_number,
++            "rect": [self.rect.x0, self.rect.y0, self.rect.x1, self.rect.y1],
++            "image": self.out_png,
++            "ocr_txt": self.ocr_txt,
++        }
++
++
++def _ocr_image(png_path: str) -> str:
++    tess = os.environ.get('TESSERACT_CMD')
++    if tess:
++        pytesseract.pytesseract.tesseract_cmd = tess
++    try:
++        text = pytesseract.image_to_string(Image.open(png_path), lang='spa+eng')
++        text = re.sub(r"\s+", " ", text).strip()
++        return text
++    except Exception as e:
++        return f"<OCR_ERROR: {e}>"
++
++
++def extract_signature_appearances(pdf_path: str, out_dir: str):
++    """Localiza widgets de tipo firma (Sig) y recorta su apariencia a PNG con OCR."""
++    ensure_dir(out_dir)
++    import fitz
++    doc = fitz.open(pdf_path)
++    appearances = []
++    base = os.path.splitext(os.path.basename(pdf_path))[0]
++
++    for pno in range(doc.page_count):
++        page = doc.load_page(pno)
++
++        widgets = []
++        try:
++            widgets = list(page.widgets()) or []
++        except Exception:
++            widgets = []
++
++        cand_rects = []
++        for w in widgets:
++            ftype = str(getattr(w, 'field_type', '') or getattr(w, 'ft', '')).lower()
++            if 'sig' in ftype:
++                rect = fitz.Rect(w.rect)
++                cand_rects.append(rect)
++
++        if not cand_rects:
++            try:
++                annot = page.first_annot
++                while annot:
++                    try:
++                        subtype = (annot.type[1] if isinstance(annot.type, tuple) else str(annot.type))
++                        if 'Widget' in str(subtype):
++                            info = annot.info or {}
++                            ft = str(info.get('FT') or info.get('FieldType') or '').lower()
++                            fname = str(info.get('Field') or info.get('T') or '')
++                            if 'sig' in ft or fname.lower().endswith('sig'):
++                                cand_rects.append(fitz.Rect(annot.rect))
++                    except Exception:
++                        pass
++                    annot = annot.next
++            except Exception:
++                pass
++
++        for idx, rect in enumerate(cand_rects):
++            exp = rect * 1.1
++            mat = fitz.Matrix(2, 2)
++            pix = page.get_pixmap(matrix=mat, clip=exp)
++            out_png = os.path.join(out_dir, f"{base}_p{pno+1}_sig{idx+1}.png")
++            pix.save(out_png)
++            ocr_txt = _ocr_image(out_png)
++            txt_path = out_png.replace('.png', '.txt')
++            try:
++                with open(txt_path, 'w', encoding='utf-8') as fh:
++                    fh.write(ocr_txt)
++            except Exception:
++                pass
++            appearances.append({
++                "page": pno + 1,
++                "rect": [rect.x0, rect.y0, rect.x1, rect.y1],
++                "image": out_png,
++                "ocr_txt": ocr_txt,
++            })
++
++    doc.close()
++    return appearances
++
++
++# ------------- Validación de firmas -------------
++def validate_file_signatures(pdf_path: str, vc: Optional[ValidationContext]) -> Dict[str, Any]:
++    """Devuelve un dict con el resultado de validate_pdf_signatures (lista de firmas)."""
++    result: Dict[str, Any] = {
++        "file": pdf_path,
++        "signatures": [],
++        "errors": [],
++    }
++    try:
++        with open(pdf_path, 'rb') as fh:
++            reader = PdfFileReader(fh)
++            statuses = list(validate_pdf_signatures(reader, validation_context=vc))
++            for sidx, st in enumerate(statuses, start=1):
++                entry: Dict[str, Any] = {
++                    "index": sidx,
++                    "covered_changes": getattr(st, 'coverage', None),
++                    "docmdp_ok": getattr(st, 'docmdp_ok', None),
++                    "integrity_ok": getattr(st, 'intact', None) or getattr(st, 'valid', None),
++                    "trusted": getattr(st, 'trust_status', None) in (True, 'TRUSTED') or getattr(st, 'trusted', None),
++                    "signer_name": None,
++                    "signing_time": None,
++                    "signer_cert_subject": None,
++                    "signer_cert_serial": None,
++                    "revocation": getattr(st, 'revocation_validity', None),
++                    "errors": [],
++                    "warnings": [],
++                }
++                try:
++                    scert = getattr(st, 'signer_cert', None)
++                    if scert is not None:
++                        try:
++                            subj = scert.subject.native
++                            entry["signer_cert_subject"] = subj
++                            entry["signer_name"] = subj.get('common_name') or subj.get('organization_name')
++                        except Exception:
++                            entry["signer_cert_subject"] = str(scert)
++                        try:
++                            entry["signer_cert_serial"] = getattr(scert, 'serial_number', None) or getattr(scert, 'serial', None)
++                        except Exception:
++                            pass
++                except Exception as e:
++                    entry["errors"].append(f"signer_cert parse error: {e}")
++
++                try:
++                    entry["signing_time"] = getattr(st, 'signing_time', None)
++                except Exception:
++                    pass
++
++                for attr in ("validation_errors", "reporting_errors", "failure_reasons"):
++                    v = getattr(st, attr, None)
++                    if v:
++                        entry["errors"].append(str(v))
++                for attr in ("validation_warnings", "warnings"):
++                    v = getattr(st, attr, None)
++                    if v:
++                        entry["warnings"].append(str(v))
++
++                result["signatures"].append(entry)
++    except Exception as e:
++        result["errors"].append(f"validate_pdf_signatures failed: {e}")
++
++    return result
++
++
++# ------------- Consolidación & Reporte -------------
++def write_json(path: str, obj: Any) -> None:
++    with open(path, 'w', encoding='utf-8') as fh:
++        json.dump(obj, fh, ensure_ascii=False, indent=2, default=lambda o: J(o))
++
++
++def build_text_report(batch: List[Dict[str, Any]], out_txt: str) -> None:
++    lines: List[str] = []
++    lines.append("REPORTE DE VALIDACIÓN DE FIRMAS — CNEL_Verificador_CLI")
++    lines.append(f"Generado: {dt.datetime.now().isoformat()}\n")
++    for item in batch:
++        f = item.get('file')
++        lines.append(f"Archivo: {f}")
++        sigs = item.get('signatures') or []
++        if not sigs:
++            errs = item.get('errors') or []
++            lines.append(f"  - Sin firmas detectadas o error de validación. Errores: {', '.join(map(str, errs)) if errs else 'N/A'}\n")
++            continue
++        for s in sigs:
++            lines.append(f"  - Firma #{s.get('index')} | Integridad: {'OK' if s.get('integrity_ok') else 'FALLA'} | Confiable: {'SÍ' if s.get('trusted') else 'NO'}")
++            lines.append(f"    Firmante: {s.get('signer_name') or 'N/D'} | Serie: {s.get('signer_cert_serial')}")
++            lines.append(f"    Fecha firma: {s.get('signing_time') or 'N/D'}")
++            warn = s.get('warnings') or []
++            err = s.get('errors') or []
++            if warn:
++                lines.append(f"    Avisos: { '; '.join(map(str, warn)) }")
++            if err:
++                lines.append(f"    Errores: { '; '.join(map(str, err)) }")
++        lines.append("")
++
++    with open(out_txt, 'w', encoding='utf-8') as fh:
++        fh.write("\n".join(lines))
++
++
++# ------------- Main -------------
++def main():
++    ap = argparse.ArgumentParser(description="Valida firmas (untrusted+trusted) y extrae OCR de apariencias.")
++    ap.add_argument('src', help='Carpeta con PDFs a procesar')
++    ap.add_argument('--trust', help='Carpeta con certificados raíz/intermedios (PEM/DER/CRT/CER)', default=None)
++    ap.add_argument('--out', help='Carpeta de salida donde se creará un subdirectorio timestamp', default=None)
++    args = ap.parse_args()
++
++    src = os.path.abspath(args.src)
++    if not os.path.isdir(src):
++        raise SystemExit(f"SRC inválido: {src}")
++
++    out_root = os.path.abspath(args.out or os.path.join(os.getcwd(), 'reports'))
++    out_dir = ensure_dir(os.path.join(out_root, now_stamp()))
++    out_imgs = ensure_dir(os.path.join(out_dir, 'apariencias'))
++
++    print(f"SRC   : {src}")
++    print(f"TRUST : {args.trust or '<none>'}")
++    print(f"OUT   : {out_dir}")
++
++    pdfs = list_pdfs(src)
++    if not pdfs:
++        raise SystemExit("No se encontraron PDFs en SRC.")
++
++    all_appearances: Dict[str, List[Dict[str, Any]]] = {}
++    for pdf in pdfs:
++        try:
++            apps = extract_signature_appearances(pdf, out_imgs)
++            all_appearances[pdf] = list(apps)
++        except Exception as e:
++            print(f"[OCR] {{os.path.basename(pdf)}} → ERROR: {{e}}")
++            all_appearances[pdf] = []
++
++    batch_untrusted: List[Dict[str, Any]] = []
++    for pdf in pdfs:
++        res = validate_file_signatures(pdf, vc=None)
++        batch_untrusted.append(res)
++
++    vc = make_validation_context(args.trust)
++    batch_trusted: List[Dict[str, Any]] = []
++    if vc is not None:
++        for pdf in pdfs:
++            res = validate_file_signatures(pdf, vc=vc)
++            batch_trusted.append(res)
++
++    write_json(os.path.join(out_dir, 'sig_untrusted.json'), {
++        "generated": dt.datetime.now(),
++        "src": src,
++        "count": len(batch_untrusted),
++        "results": batch_untrusted,
++        "appearances": all_appearances,
++    })
++
++    if vc is not None:
++        write_json(os.path.join(out_dir, 'sig_trusted.json'), {
++            "generated": dt.datetime.now(),
++            "src": src,
++            "count": len(batch_trusted),
++            "results": batch_trusted,
++            "appearances": all_appearances,
++        })
++
++    build_text_report(batch_trusted or batch_untrusted, os.path.join(out_dir, 'reporte_lote.txt'))
++
++    print("\nListo ✅")
++    print(f"- sig_untrusted.json → {{os.path.join(out_dir, 'sig_untrusted.json')}}")
++    if vc is not None:
++        print(f"- sig_trusted.json   → {{os.path.join(out_dir, 'sig_trusted.json')}}")
++    print(f"- reporte_lote.txt   → {{os.path.join(out_dir, 'reporte_lote.txt')}}")
++    print(f"- apariencias PNG/TXT→ {{out_imgs}}")
++
++
++if __name__ == '__main__':
++    main()
++
+diff --git a/scripts/run_validate.ps1 b/scripts/run_validate.ps1
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/scripts/run_validate.ps1
+@@ -0,0 +1,40 @@
++Param(
++  [string]$SRC   = "C:\Users\sidney.guerrero\Desktop\documentos_prueba",
++  [string]$TRUST = "C:\Users\sidney.guerrero\Desktop\trust_certs",
++  [string]$OUT   = "C:\Users\sidney.guerrero\Desktop\CNEL_Verificador_CLI\reports"
++)
++
++$ErrorActionPreference = "Stop"
++
++Write-Host "== CNEL_Verificador_CLI: Validación de firmas + OCR =="
++Write-Host "SRC   = $SRC"
++Write-Host "TRUST = $TRUST"
++Write-Host "OUT   = $OUT"
++
++python ".\tools\validate_signs_api.py" "$SRC" --trust "$TRUST" --out "$OUT"
++
+diff --git a/requirements.txt b/requirements.txt
+index e69de29..b7f5c3a 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -0,0 +1,8 @@
++# CNEL_Verificador_CLI – batch validator + OCR deps
++pyHanko==0.31.0
++pyhanko-certvalidator==0.29.0
++PyMuPDF>=1.24.0
++pillow>=10.0.0
++pytesseract>=0.3.10
++

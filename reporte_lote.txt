@@ -1,0 +1,351 @@
+﻿==============================================================================
+RESUMEN LOTE
+==============================================================================
+Total de archivos: 12
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CEDULA SIDNEY JARED GUERRERO TORRES.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CEDULA SIDNEY JARED GUERRERO TORRES.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 1 / 1 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: (sin datos) - Nombres detectados (probables): (sin datos)
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 1 de 1 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 1 / 1 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: (sin datos) - Nombres detectados (probables): (sin datos)
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 1 de 1 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 3 OCR: 0 / 5 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: 2023-04-13, 2023-04-14, 2023-04-19 - Datos energeticos: 002 V, 1280,21 kW, 002 V, 002 V, 12 kW, 12 kW, 12 kW - Nombres detectados (probables): REDISE�O COMPLEJO URBANISTICO ICON BAY, REDISE�O ICON BAY, APROBACI�N DEL PROYECTO EL�CTRICO, CNEL EP, APRUEBA EL PRESENTE PROYECTO, ICON BAY, REDISE�O
+ICON BAY, ENERGIZACI�N DEL PROYECTO, CNEL EP UN GLR, CONTRATO DE SUMINISTRO DE ENERG�A EL�CTRICA
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 5 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2025-1606-M-2.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2025-1606-M-2.pdf Firmas encontradas: 1 Firmante principal: RICARDO DANIEL VERA MERCHANCANO Fecha de firma: D:20250704093316-05'00' Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 0 / 2 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- Firma #1: DETECTADA: SI - Validez sintactica: OK - Fecha: D:20250704093316-05'00' - Quien firma: RICARDO DANIEL VERA MERCHANCANO - Emisor: AC BANCO CENTRAL DEL ECUADOR - Serial: 65E40147 - SubFilter: /adbe.pkcs7.detached - Nota: Validacion criptografica no incluida (sin OCSP/CRL).
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: (sin datos) - Nombres detectados (probables): GLR 
+ASUNTO, DIRECTOR COMERCIAL, RICARDO DANIEL VERA 
+MERCHANCANO
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 2 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Especificaciones t�cnicas redise�o icon bay_agosto 2025-signed.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Especificaciones t�cnicas redise�o icon bay_agosto 2025-signed.pdf Firmas encontradas: 1 Firmante principal: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT Fecha de firma: D:20250827104336-05'00' Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 0 / 5 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- Firma #1: DETECTADA: SI - Validez sintactica: OK - Fecha: D:20250827104336-05'00' - Quien firma: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT - Emisor: Lazzate Emisor CA2 - Serial: C200958E - SubFilter: /adbe.pkcs7.detached - Nota: Validacion criptografica no incluida (sin OCSP/CRL).
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: 200A, 5A, 8400V, 120V, 10 A, 8 A - Nombres detectados (probables): ESPECIFICACIONES DE LAS INSTALACIONES ELECTRICAS, PROYECTO REDISE�O URB, ICON BAY, MEDICION COMPACTA, NTE INEN, SISTEMA DE PUESTA, DISPOSICIONES GENERALES, NORMAS PARA LA CONSTRUCCION, REG PROF, FERNANDO PATRICIO 
+SOLANO  DE LA SALA 
+ALPRECHT
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 5 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria t�cnica Redise�o Icon Bay 19-08-25--ACT-signed-1.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria t�cnica Redise�o Icon Bay 19-08-25--ACT-signed-1.pdf Firmas encontradas: 1 Firmante principal: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT Fecha de firma: D:20250827103426-05'00' Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 0 / 8 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- Firma #1: DETECTADA: SI - Validez sintactica: OK - Fecha: D:20250827103426-05'00' - Quien firma: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT - Emisor: Lazzate Emisor CA2 - Serial: C200958E - SubFilter: /adbe.pkcs7.detached - Nota: Validacion criptografica no incluida (sin OCSP/CRL).
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: 614.38 kW, 127 V, 5A, 220V, 20A - Nombres detectados (probables): PROYECTO 
+ 
+ 
+URBANIZACI�N ICON BAY 
+ 
+ 
+REDISE�O EL�CTRICO, REDES DE MEDIA, BAJA TENSI�N 
+ 
+ 
+ 
+INSTALACIONES INTERNAS 
+ 
+ 
+ 
+SAMBOROND�N, ECUADOR
+
+URBANIZACI�N, ICON BAY, MEMORIAS T�CNICAS DEL PROYECTO EL�CTRICO, ESTUDIO DE CARGA, SISTEMA DE MEDIA TENSION, SISTEMA DE BAJA TENSION, MEDICION DE ENERGIA
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 8 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria t�cnica Redise�o Icon Bay 19-08-25--ACT-signed.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria t�cnica Redise�o Icon Bay 19-08-25--ACT-signed.pdf Firmas encontradas: 1 Firmante principal: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT Fecha de firma: D:20250827103426-05'00' Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 0 / 8 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- Firma #1: DETECTADA: SI - Validez sintactica: OK - Fecha: D:20250827103426-05'00' - Quien firma: FERNANDO PATRICIO  SOLANO  DE LA SALA ALPRECHT - Emisor: Lazzate Emisor CA2 - Serial: C200958E - SubFilter: /adbe.pkcs7.detached - Nota: Validacion criptografica no incluida (sin OCSP/CRL).
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: 614.38 kW, 127 V, 5A, 220V, 20A - Nombres detectados (probables): PROYECTO 
+ 
+ 
+URBANIZACI�N ICON BAY 
+ 
+ 
+REDISE�O EL�CTRICO, REDES DE MEDIA, BAJA TENSI�N 
+ 
+ 
+ 
+INSTALACIONES INTERNAS 
+ 
+ 
+ 
+SAMBOROND�N, ECUADOR
+
+URBANIZACI�N, ICON BAY, MEMORIAS T�CNICAS DEL PROYECTO EL�CTRICO, ESTUDIO DE CARGA, SISTEMA DE MEDIA TENSION, SISTEMA DE BAJA TENSION, MEDICION DE ENERGIA
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 8 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\NOMBRAMIENTO 2021 RSV.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\NOMBRAMIENTO 2021 RSV.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 2 / 2 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: (sin datos) - Nombres detectados (probables): (sin datos)
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 2 de 2 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\OFICION 001 FISCALIZADOR-1-signed.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\OFICION 001 FISCALIZADOR-1-signed.pdf Firmas encontradas: 1 Firmante principal: SIDNEY JARED GUERRERO TORRES Fecha de firma: D:20240906151045-05'00' Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 0 / 3 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- Firma #1: DETECTADA: SI - Validez sintactica: OK - Fecha: D:20240906151045-05'00' - Quien firma: SIDNEY JARED GUERRERO TORRES - Emisor: ANF High Assurance Ecuador Intermediate CA - Serial: 3372E24929685BE833CA275 - SubFilter: /adbe.pkcs7.detached - Nota: Validacion criptografica no incluida (sin OCSP/CRL).
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: 600 V - Nombres detectados (probables): CNEL EP, SIDNEY JARED 
+GUERRERO TORRES
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 3 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC ZION - MAYO 2022.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC ZION - MAYO 2022.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 2 | Fechas: 3 OCR: 0 / 2 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: 0992632771001, 0992632771001 - Fechas: 2009-08-21, 2009-09-09, 2022-05-24 - Datos energeticos: (sin datos) - Nombres detectados (probables): ZION ADMINISTRADORA DE FONDOS, SANDOVAL VELA RAFAEL RAMON, REGIMEN GENERAL, RODRIGO CHAVEZ, JUAN TANCA
+MARENGO, PARQUE EMPRESARIAL COLON, PACIFICA CENTER, JUNTO AL
+SUPERMAXI, TARQUI
+ZONA, GUAYAQUIL
+SI
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 2 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC_Fideicomiso ICon Bay_2025.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC_Fideicomiso ICon Bay_2025.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 1 | RUC: 2 | Fechas: 3 OCR: 0 / 2 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: 0982895229 - RUC validos: 0993240524001, 0993240524001 - Fechas: 2019-12-09, 2019-12-11, 2022-09-13 - Datos energeticos: (sin datos) - Nombres detectados (probables): FIDEICOMISO MERCANTIL ICON BAY, ZION ADMINISTRADORA DE FONDOS, AV RODRIGO CHAVEZ, JUAN TANCA MARENGO, PARQUE EMPRESARIAL COLON, PACIFICA CENTER, TARQUI
+ZONA, GUAYAQUIL
+SI, SI
+SOCIEDADES, ACTIVIDADES DE ENTIDADES JUR�DICAS ORGANIZADAS PARA LA MANCOMUNI�N
+DE VALORES
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 0 de 2 pagina(s) pasaron por OCR.
+
+
+
+==============================================================================
+ARCHIVO: C:\Users\sidney.guerrero\Desktop\documentos_prueba\SID-3583 BH25082217210.pdf
+==============================================================================
+RESUMEN
+------------------------------------------------------------------------------
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\SID-3583 BH25082217210.pdf Firmas encontradas: 0 Firmante principal: (sin firmas) Fecha de firma: (sin firmas) Director detectado: NO (score 0.0) Cedulas: 0 | RUC: 0 | Fechas: 0 OCR: 1 / 1 pagina(s)
+
+FIRMA ELECTRONICA
+------------------------------------------------------------------------------
+- No se detectaron firmas.
+
+DIRECTOR COMERCIAL
+------------------------------------------------------------------------------
+- Detectado: NO (mejor score 0.0)
+
+ENTIDADES EXTRAIDAS
+------------------------------------------------------------------------------
+- Cedulas validas: (sin datos) - RUC validos: (sin datos) - Fechas: (sin datos) - Datos energeticos: (sin datos) - Nombres detectados (probables): (sin datos)
+
+ESTADISTICAS OCR
+------------------------------------------------------------------------------
+- 1 de 1 pagina(s) pasaron por OCR.
+

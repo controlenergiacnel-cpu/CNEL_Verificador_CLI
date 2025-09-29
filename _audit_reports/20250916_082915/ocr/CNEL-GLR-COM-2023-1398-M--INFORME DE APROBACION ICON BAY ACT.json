@@ -1,0 +1,40 @@
+﻿{
+  "pages": 5,
+  "chars_total": 11932,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 2233,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 3617,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 3,
+      "chars": 4252,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 4,
+      "chars": 1714,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 5,
+      "chars": 116,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "Memorando Nro. CNEL-GLR-COM-2023-1398-M\nGuayaquil, 21 de abril de 2023\nPARA:\nSeñor Ingeniero Eléctrico Mateo Nicolás Mora Delgado \nASUNTO:\nAprobación Proyecto Eléctrico \"REDISEÑO COMPLEJO URBANISTICO ICON BAY\"\n(S/DURAN) B/S 2804-2023. \n \nDe mi consideración: \n \nEn atención a su s..."
+}

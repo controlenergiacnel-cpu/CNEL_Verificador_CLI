@@ -1,0 +1,18 @@
+﻿{
+  "pages": 1,
+  "chars_total": 345,
+  "ocr_pages": [
+    1
+  ],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 345,
+      "empty": false,
+      "used_ocr": true
+    }
+  ],
+  "used_ocr": true,
+  "method": "easyocr",
+  "sample": "aepubucadelecuDoR Ce\nLu ati ToMoo nni 754e GobosamecaoMk F TOaaes Zpaia Qu Enno QLaaa a Qqun Iwwd$ 2) + 2021 01-12 K Munoce 4041011 Mnraaaa crioA Idecuori7qi66i<82<<(KKKKKKk88< 8108297<3101126Ecu{<<rr<krrr*0 guerrero<torresrksidney<jared<\nGua CIUDADANIA EIRREO IQan sloiay MED\n091..."
+}

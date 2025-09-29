@@ -1,0 +1,83 @@
+﻿{
+    "text":  {
+                 "min_chars_for_native":  80
+             },
+    "ocr":  {
+                "force":  false,
+                "scale":  2.0,
+                "scale_hi":  3,
+                "scale_max":  3.5,
+                "score_retry1":  110,
+                "score_retry2":  145,
+                "max_workers":  2,
+                "tiling":  true,
+                "tile_grid":  [
+                                  2,
+                                  2
+                              ],
+                "clahe":  true,
+                "rot_quadrants":  true,
+                "rot_sweep":  [
+                                  -12,
+                                  12
+                              ],
+                "cache":  true,
+                "cache_dir":  ".ocr_cache",
+                "allowlist":  "ABCDEFGHIJKLMNOPQRSTUVWXYZ???????abcdefghijklmnopqrstuvwxyz???????0123456789-./:() ",
+                "min_chars_for_native":  80,
+                "langs":  [
+                              "es",
+                              "en"
+                          ],
+                "ocrmypdf":  {
+                                 "enable":  true,
+                                 "jobs":  2,
+                                 "timeout_sec":  240,
+                                 "flags":  [
+                                               "--skip-text",
+                                               "--rotate-pages",
+                                               "--deskew",
+                                               "--clean-final",
+                                               "--remove-background",
+                                               "--skip-big",
+                                               "45",
+                                               "--tesseract-timeout",
+                                               "90",
+                                               "-l",
+                                               "spa+eng"
+                                           ]
+                             }
+            },
+    "fast":  {
+                 "max_easyocr_calls_per_page":  14,
+                 "tile_if_score_below":  120,
+                 "rot_quads_if_below":  115,
+                 "rot_sweep_if_below":  115,
+                 "stop_when_score_reaches":  260,
+                 "small_text_retry_below":  110
+             },
+    "tesseract":  {
+                      "psm":  [
+                                  6,
+                                  7
+                              ],
+                      "tesseract_if_below":  160,
+                      "enable":  true,
+                      "cmd":  "C:\\Users\\sidney.guerrero\\AppData\\Local\\Programs\\Tesseract-OCR\\tesseract.exe"
+                  },
+    "director":  {
+                     "canonical":  "RICARDO DANIEL VERA MERCHANCANO",
+                     "aliases":  [
+                                     "RICARDO VERA MERCHANCANO",
+                                     "R D VERA MERCHANCANO",
+                                     "R VERA MERCHANCANO",
+                                     "RICARDO D VERA MERCHANCANO",
+                                     "RICARDO VERA M",
+                                     "ING RICARDO VERA"
+                                 ],
+                     "min_score":  62.0
+                 },
+    "report":  {
+                   "ascii_mode":  true
+               }
+}

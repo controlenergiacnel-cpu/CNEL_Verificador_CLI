@@ -1,0 +1,231 @@
+{
+  "generated": "2025-09-19T16:08:34.735382",
+  "src": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba",
+  "count": 24,
+  "results": [
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CEDULA SIDNEY JARED GUERRERO TORRES.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CEDULA SIDNEY JARED GUERRERO TORRES.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2025-1606-M-2.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2025-1606-M-2.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Especificaciones técnicas rediseño icon bay_agosto 2025-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Especificaciones técnicas rediseño icon bay_agosto 2025-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed-1.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed-1.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\NOMBRAMIENTO 2021 RSV.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\NOMBRAMIENTO 2021 RSV.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\OFICION 001 FISCALIZADOR-1-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\OFICION 001 FISCALIZADOR-1-signed.pdf",
+      "signatures": [
+        {
+          "index": 1,
+          "integrity_ok": true,
+          "trusted": false,
+          "signing_time": null,
+          "errors": [],
+          "warnings": []
+        }
+      ],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC ZION - MAYO 2022.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC ZION - MAYO 2022.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC_Fideicomiso ICon Bay_2025.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC_Fideicomiso ICon Bay_2025.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\SID-3583 BH25082217210.pdf",
+      "signatures": [],
+      "errors": []
+    },
+    {
+      "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\SID-3583 BH25082217210.pdf",
+      "signatures": [],
+      "errors": []
+    }
+  ],
+  "appearances": {
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CEDULA SIDNEY JARED GUERRERO TORRES.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2025-1606-M-2.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Especificaciones técnicas rediseño icon bay_agosto 2025-signed.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed-1.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\NOMBRAMIENTO 2021 RSV.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\OFICION 001 FISCALIZADOR-1-signed.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC ZION - MAYO 2022.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC_Fideicomiso ICon Bay_2025.pdf": [],
+    "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\SID-3583 BH25082217210.pdf": []
+  }
+}

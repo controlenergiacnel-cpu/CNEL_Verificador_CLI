@@ -1,0 +1,40 @@
+﻿{
+  "pages": 5,
+  "chars_total": 9403,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1868,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 1791,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 3,
+      "chars": 2200,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 4,
+      "chars": 2047,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 5,
+      "chars": 1497,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "ESPECIFICACIONES DE LAS INSTALACIONES ELECTRICAS – \nPROYECTO REDISEÑO URB. ICON BAY \n \n1. \nNORMAS \n \nMientras no se indique lo contrario, o se especifique en planos, todos los materiales eléctricos, equipo, \ninstalación y pruebas, se regirán de acuerdo a lo establecido en las sig..."
+}

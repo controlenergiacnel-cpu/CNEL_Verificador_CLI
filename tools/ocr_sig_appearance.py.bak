@@ -1,0 +1,93 @@
+﻿from __future__ import annotations
+import os, sys, json, io
+from typing import List, Dict, Any
+import fitz  # PyMuPDF
+from PIL import Image
+import pytesseract
+
+CFG_PATH = os.path.join("config","config.json")
+
+def _load_cfg() -> Dict[str, Any]:
+    try:
+        import json
+        with open(CFG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _init_tesseract_from_cfg(cfg: Dict[str, Any]) -> None:
+    tcfg = (cfg.get("tesseract") or {})
+    texe = (tcfg.get("cmd") or "").strip()
+    if texe and os.path.exists(texe):
+        pytesseract.pytesseract.tesseract_cmd = texe
+        tdir = os.path.dirname(texe)
+        tdata = os.path.join(tdir, "tessdata")
+        if os.path.isdir(tdata):
+            os.environ["TESSDATA_PREFIX"] = tdata
+
+def _ocr_img(pil: Image.Image) -> str:
+    try:
+        return pytesseract.image_to_string(pil, lang="spa+eng", config="--oem 3 --psm 6") or ""
+    except Exception:
+        return ""
+
+def _iter_pdfs(target: str) -> List[str]:
+    out = []
+    if os.path.isdir(target):
+        for r, d, fns in os.walk(target):
+            for fn in fns:
+                if fn.lower().endswith(".pdf"):
+                    out.append(os.path.join(r, fn))
+    else:
+        out = [target]
+    return out
+
+def _pm_to_pil(pm: fitz.Pixmap) -> Image.Image:
+    if pm.alpha:  # quitar alfa si existe
+        pm = fitz.Pixmap(fitz.csRGB, pm)
+    return Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
+
+def _extract_for_file(pdf_path: str) -> Dict[str, Any]:
+    res = {"file": pdf_path, "boxes": [], "error": None}
+    try:
+        with fitz.open(pdf_path) as doc:
+            sig_const = getattr(fitz, "PDF_WIDGET_TYPE_SIGNATURE", 6)
+            margin = 4  # px de margen al recortar
+            for pno in range(doc.page_count):
+                page = doc.load_page(pno)
+                widgets = page.widgets() or []
+                for w in widgets:
+                    ftype = getattr(w, "field_type", None)
+                    is_signature = (ftype == sig_const) or (str(getattr(w, "field_type_string", "")).lower() == "signature")
+                    if not is_signature:
+                        continue
+                    rect = getattr(w, "rect", None)
+                    if not rect:
+                        continue
+                    clip = fitz.Rect(rect.x0 - margin, rect.y0 - margin, rect.x1 + margin, rect.y1 + margin)
+                    pm = page.get_pixmap(clip=clip, dpi=300, annots=False)
+                    pil = _pm_to_pil(pm)
+                    text = (_ocr_img(pil) or "").strip()
+                    res["boxes"].append({
+                        "page": pno + 1,
+                        "rect": [rect.x0, rect.y0, rect.x1, rect.y1],
+                        "text": text
+                    })
+    except Exception as e:
+        res["error"] = str(e)
+    return res
+
+def main():
+    if len(sys.argv) < 2:
+        print("Uso: python -m tools.ocr_sig_appearance <archivo.pdf|carpeta>")
+        raise SystemExit(1)
+    cfg = _load_cfg()
+    _init_tesseract_from_cfg(cfg)
+    target = sys.argv[1]
+    results = []
+    for f in _iter_pdfs(target):
+        results.append(_extract_for_file(f))
+    print(json.dumps(results, ensure_ascii=False, indent=2))
+
+if __name__ == "__main__":
+    main()

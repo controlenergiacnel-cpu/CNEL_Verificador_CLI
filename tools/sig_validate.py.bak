@@ -1,0 +1,44 @@
+# tools/sig_validate.py
+from __future__ import annotations
+import sys, os, json
+from pyhanko.pdf_utils.reader import PdfFileReader
+from pyhanko.sign.validation import validate_pdf_signature
+from pyhanko_certvalidator.context import ValidationContext
+
+def validate_file(pdf_path: str):
+    out = {"file": pdf_path, "signatures": [], "errors": []}
+    with open(pdf_path, "rb") as f:
+        r = PdfFileReader(f)
+        for s in r.embedded_signatures:
+            try:
+                vc = ValidationContext(allow_fetching=True)  # intenta traer intermedios por AIA
+                status = validate_pdf_signature(s, vc)
+                out["signatures"].append({
+                    "field_name": s.field_name,
+                    "summary": status.summary(),
+                    "trusted": bool(getattr(status, "trusted", False)),
+                    "modification_level": (status.modification_level.name
+                                           if getattr(status, "modification_level", None) else None),
+                    "intact":  bool(getattr(status, "modification_level", None) and
+                                    status.modification_level.name in ("NONE","FORM_FILLING","ANNOTATIONS")),
+                    "signing_time": getattr(status, "signing_time", None),
+                })
+            except Exception as e:
+                out["errors"].append(str(e))
+    return out
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Uso: python tools/sig_validate.py <archivo.pdf|carpeta>")
+        sys.exit(1)
+    target = sys.argv[1]
+    files = []
+    if os.path.isdir(target):
+        for root, _, fns in os.walk(target):
+            for fn in fns:
+                if fn.lower().endswith(".pdf"):
+                    files.append(os.path.join(root, fn))
+    else:
+        files = [target]
+    results = [validate_file(p) for p in files]
+    print(json.dumps(results, ensure_ascii=False, indent=2, default=str))

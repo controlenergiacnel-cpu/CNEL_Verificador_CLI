@@ -1,0 +1,48 @@
+REPORTE DE VALIDACIÓN DE FIRMAS — CNEL_Verificador_CLI
+Generado: 2025-09-22T14:35:46.813284
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CEDULA SIDNEY JARED GUERRERO TORRES.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\CNEL-GLR-COM-2025-1606-M-2.pdf
+  - Firma #1 | Integridad: OK | Confiable: NO
+    Firmante: N/D | Serie: None
+    Fecha firma: None
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Especificaciones técnicas rediseño icon bay_agosto 2025-signed.pdf
+  - Firma #1 | Integridad: OK | Confiable: NO
+    Firmante: N/D | Serie: None
+    Fecha firma: None
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed-1.pdf
+  - Firma #1 | Integridad: OK | Confiable: NO
+    Firmante: N/D | Serie: None
+    Fecha firma: None
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\Memoria técnica Rediseño Icon Bay 19-08-25--ACT-signed.pdf
+  - Firma #1 | Integridad: OK | Confiable: NO
+    Firmante: N/D | Serie: None
+    Fecha firma: None
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\NOMBRAMIENTO 2021 RSV.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\OFICION 001 FISCALIZADOR-1-signed.pdf
+  - Firma #1 | Integridad: OK | Confiable: NO
+    Firmante: N/D | Serie: None
+    Fecha firma: None
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC ZION - MAYO 2022.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\RUC_Fideicomiso ICon Bay_2025.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A
+
+Archivo: C:\Users\sidney.guerrero\Desktop\documentos_prueba\SID-3583 BH25082217210.pdf
+  - Sin firmas detectadas o error de validación. Errores: N/A

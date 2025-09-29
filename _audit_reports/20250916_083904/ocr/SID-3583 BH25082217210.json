@@ -1,0 +1,18 @@
+﻿{
+  "pages": 1,
+  "chars_total": 1408,
+  "ocr_pages": [
+    1
+  ],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 1408,
+      "empty": false,
+      "used_ocr": true
+    }
+  ],
+  "used_ocr": true,
+  "method": "easyocr",
+  "sample": "iTU ÉXITO ES NUESTRA RESPONSABILIDAD!\nZION ADMIINISTRADORA DE FONDOS Y FIDEICOMISOS SA\nGuayaquil; 25 de agosto de 2025\nSres . CNEL-EP UNIDAD DE NEGOCIO GUAYAS-LOS RIOS Ciudad.\nCARTA DE AUTORIZACIÓN\nDe mis consideraciones,\nYo, AB; RAFAEL SANDOVAL VELA con CI. 091268846-2 en mi cal..."
+}

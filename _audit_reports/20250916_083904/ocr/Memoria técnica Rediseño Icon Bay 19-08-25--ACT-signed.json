@@ -1,0 +1,58 @@
+﻿{
+  "pages": 8,
+  "chars_total": 12655,
+  "ocr_pages": [],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 163,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 2,
+      "chars": 964,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 3,
+      "chars": 2316,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 4,
+      "chars": 1645,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 5,
+      "chars": 2071,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 6,
+      "chars": 2572,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 7,
+      "chars": 1688,
+      "empty": false,
+      "used_ocr": false
+    },
+    {
+      "page": 8,
+      "chars": 1236,
+      "empty": false,
+      "used_ocr": false
+    }
+  ],
+  "used_ocr": false,
+  "method": "native",
+  "sample": "1 \n \n \n \n \n \nPROYECTO \n \n \nURBANIZACIÓN ICON BAY \n \n \nREDISEÑO ELÉCTRICO: \nREDES DE MEDIA Y BAJA TENSIÓN \n \n \n \nINSTALACIONES INTERNAS \n \n \n \nSAMBORONDÓN  ECUADOR..."
+}

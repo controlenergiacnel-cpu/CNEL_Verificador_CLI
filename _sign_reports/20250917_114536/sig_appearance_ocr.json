@@ -1,0 +1,117 @@
+[
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CEDULA SIDNEY JARED GUERRERO TORRES.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\CNEL-GLR-COM-2025-1606-M-2.pdf",
+    "found_boxes": 1,
+    "boxes": [
+      {
+        "page": 2,
+        "rect": [
+          258.0,
+          749.0,
+          372.0,
+          789.0
+        ],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Especificaciones tÚcnicas redise±o icon bay_agosto 2025-signed.pdf",
+    "found_boxes": 1,
+    "boxes": [
+      {
+        "page": 5,
+        "rect": [
+          139.0,
+          450.0,
+          253.0,
+          490.0
+        ],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria tÚcnica Redise±o Icon Bay 19-08-25--ACT-signed-1.pdf",
+    "found_boxes": 1,
+    "boxes": [
+      {
+        "page": 8,
+        "rect": [
+          126.0,
+          457.0,
+          240.0,
+          497.0
+        ],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\Memoria tÚcnica Redise±o Icon Bay 19-08-25--ACT-signed.pdf",
+    "found_boxes": 1,
+    "boxes": [
+      {
+        "page": 8,
+        "rect": [
+          126.0,
+          457.0,
+          240.0,
+          497.0
+        ],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\NOMBRAMIENTO 2021 RSV.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\OFICION 001 FISCALIZADOR-1-signed.pdf",
+    "found_boxes": 1,
+    "boxes": [
+      {
+        "page": 3,
+        "rect": [
+          122.0,
+          380.0,
+          236.0,
+          420.0
+        ],
+        "text": ""
+      }
+    ]
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC ZION - MAYO 2022.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\RUC_Fideicomiso ICon Bay_2025.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  },
+  {
+    "file": "C:\\Users\\sidney.guerrero\\Desktop\\documentos_prueba\\SID-3583 BH25082217210.pdf",
+    "found_boxes": 0,
+    "boxes": []
+  }
+]

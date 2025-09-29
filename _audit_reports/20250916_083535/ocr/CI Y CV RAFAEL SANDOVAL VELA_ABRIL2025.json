@@ -1,0 +1,18 @@
+﻿{
+  "pages": 1,
+  "chars_total": 838,
+  "ocr_pages": [
+    1
+  ],
+  "per_page": [
+    {
+      "page": 1,
+      "chars": 838,
+      "empty": false,
+      "used_ocr": true
+    }
+  ],
+  "used_ocr": true,
+  "method": "easyocr",
+  "sample": "REPÚBLICA DELECUADOR DiPiCCox RFCISIROCIVIL IDETI k ACO Cous De CIUDADANÉA 091268846-2 ALDOS SANDOVAL VELA RAFAEL Ramon DeRCILNO GAYAS GUAYAQUIL CARBO ICONCEFCION Fchcf 22 1984-05-31 Tr\"n \" ECUATORIANA So HOMBRE E517220 CaSADO 424e QUIROGA GALARZA ROMINA AFJNDRA FIkM DEL CedUADO\n..."
+}

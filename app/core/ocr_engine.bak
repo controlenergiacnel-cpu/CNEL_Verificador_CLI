@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+"""
+ocr_engine.py
+Pipeline OCR reforzado:
+- Tesseract primero (rápido, DPI 360-420)
+- EasyOCR solo si Tesseract devuelve poco texto (fallback)
+- Procesa TODAS las páginas (rango completo)
+"""
+
+from __future__ import annotations
+import os, io, re
+from typing import List, Optional, Tuple
+from dataclasses import dataclass
+
+import fitz  # PyMuPDF
+from PIL import Image
+import pytesseract
+
+try:
+    import easyocr
+except Exception:
+    easyocr = None
+
+
+@dataclass
+class OcrConfig:
+    tesseract_path: Optional[str] = None
+    langs: str = "spa+eng"
+    dpi: int = 360  # recomendado 360–420
+    max_dpi: int = 420
+    min_dpi: int = 300
+    use_easyocr_fallback: bool = True
+
+
+def _enough_text(txt: str) -> bool:
+    t = (txt or "").strip()
+    if len(t) >= 120:
+        return True
+    letters = sum(ch.isalpha() for ch in t)
+    ratio = (letters / max(1, len(t))) * 100.0
+    return ratio >= 35.0
+
+
+def _pix_to_image(pix: fitz.Pixmap) -> Image.Image:
+    if pix.n < 5:  # GRAY or RGB
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+    else:
+        pix0 = fitz.Pixmap(fitz.csRGB, pix)
+        img = Image.frombytes("RGB", [pix0.width, pix0.height], pix0.samples)
+        pix0 = None
+    return img
+
+
+def _page_to_text_tess(page: fitz.Page, dpi: int, langs: str) -> str:
+    zoom = dpi / 72.0
+    mat = fitz.Matrix(zoom, zoom)
+    pix = page.get_pixmap(matrix=mat, alpha=False)
+    img = _pix_to_image(pix)
+    return pytesseract.image_to_string(img, lang=langs)
+
+
+def _page_to_text_easy(page: fitz.Page, dpi: int, langs: str, reader=None) -> str:
+    zoom = dpi / 72.0
+    mat = fitz.Matrix(zoom, zoom)
+    pix = page.get_pixmap(matrix=mat, alpha=False)
+    img = _pix_to_image(pix)
+    if reader is None:
+        langs_list = []
+        for token in re.split(r"[+,\s]+", langs.strip()):
+            if token:
+                langs_list.append(token.lower())
+        reader = easyocr.Reader(langs_list, gpu=False, verbose=False)
+    res = reader.readtext(img)
+    # Concatenar por orden
+    lines = [chunk[1] for chunk in res if isinstance(chunk, (list, tuple)) and len(chunk) >= 2]
+    return "\n".join(lines)
+
+
+def ocr_pdf_all_pages(pdf_path: str, cfg: OcrConfig) -> str:
+    if cfg.tesseract_path and os.path.exists(cfg.tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = cfg.tesseract_path
+
+    dpi = max(cfg.min_dpi, min(cfg.dpi, cfg.max_dpi))
+    out_chunks: List[str] = []
+
+    with fitz.open(pdf_path) as doc:
+        for pno in range(len(doc)):
+            page = doc[pno]
+            text_tess = _page_to_text_tess(page, dpi=dpi, langs=cfg.langs)
+            if _enough_text(text_tess):
+                out_chunks.append(text_tess)
+            else:
+                if cfg.use_easyocr_fallback and easyocr is not None:
+                    try:
+                        text_easy = _page_to_text_easy(page, dpi=dpi, langs=cfg.langs)
+                        out_chunks.append(text_easy if text_easy.strip() else text_tess)
+                    except Exception:
+                        out_chunks.append(text_tess)
+                else:
+                    out_chunks.append(text_tess)
+
+    return "\n\n".join(out_chunks).strip()

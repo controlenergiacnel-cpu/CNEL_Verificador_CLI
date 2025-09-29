@@ -1,0 +1,7 @@
+{
+  "tesseract_cmd": "C:\\Users\\sidney.guerrero\\AppData\\Local\\Programs\\Tesseract-OCR\\tesseract.exe",
+  "ocr_langs": "spa+eng",
+  "ocr_dpi": 380,
+  "director_threshold": 0.72,
+  "trust_store_dir": "config\\trust"
+}

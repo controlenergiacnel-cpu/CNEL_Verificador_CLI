@@ -1,0 +1,112 @@
+﻿REPORTE DE LOTE - 2025-09-17 11:48:29
+========================================================================
+Entradas: untrusted=12 | trusted=12 | ocr=12
+
+------------------------------------------------------------------------
+Archivo: CEDULA SIDNEY JARED GUERRERO TORRES.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: CI Y CV RAFAEL SANDOVAL VELA_ABRIL2025.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: CNEL-GLR-COM-2023-1398-M--INFORME DE APROBACION ICON BAY ACT.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: CNEL-GLR-COM-2025-1606-M-2.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: Especificaciones t┌cnicas redise▒o icon bay_agosto 2025-signed.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: Memoria t┌cnica Redise▒o Icon Bay 19-08-25--ACT-signed-1.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: Memoria t┌cnica Redise▒o Icon Bay 19-08-25--ACT-signed.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: NOMBRAMIENTO 2021 RSV.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: OFICION 001 FISCALIZADOR-1-signed.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: RUC ZION - MAYO 2022.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: RUC_Fideicomiso ICon Bay_2025.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+
+------------------------------------------------------------------------
+Archivo: SID-3583 BH25082217210.pdf
+  [Validaci¾n sin confianza]
+    - Firma 1: sujeto='' | issuer='' | estado=''
+  [Validaci¾n con confianza]
+    - Firma 1: sujeto='' | issuer='' | confianza=''
+  [OCR de apariencia de firma]
+    - Apariencia 1:
+

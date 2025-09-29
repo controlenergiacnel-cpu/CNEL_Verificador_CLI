@@ -1,0 +1,342 @@
+﻿# validate_signs_api.py
+from __future__ import annotations
+import os, re, json, glob, enum, argparse, datetime as dt
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+print(">> validate_signs_api.py arrancó OK")
+
+import fitz
+from PIL import Image
+import pytesseract
+from pyhanko.pdf_utils.reader import PdfFileReader
+from pyhanko.sign.validation import validate_pdf_signature   # <<-- API correcta en 0.31
+from pyhanko_certvalidator import ValidationContext
+from asn1crypto import pem, x509
+import logging
+
+
+def J(v):
+    if isinstance(v, (dt.datetime, dt.date)): return v.isoformat()
+    if isinstance(v, enum.Enum): return v.name
+    if isinstance(v, Path): return str(v)
+    if isinstance(v, (set, frozenset)): return list(v)
+    if isinstance(v, (bytes, bytearray)):
+        try: return v.decode("utf-8", errors="replace")
+        except Exception: return str(v)
+    return str(v)
+
+def now_stamp(): return dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+def ensure_dir(p): os.makedirs(p, exist_ok=True); return p
+def list_pdfs(src):
+    seen = set()
+    for pat in ("*.pdf", "*.PDF"):
+        for p in glob.glob(os.path.join(src, pat)):
+            try:
+                seen.add(os.path.abspath(p))
+            except Exception:
+                pass
+    return sorted(seen)
+def load_certificates_from_dir(trust_dir: Optional[str]) -> List[x509.Certificate]:
+    certs=[]
+    if not trust_dir or not os.path.isdir(trust_dir): return certs
+    for fname in os.listdir(trust_dir):
+        fpath=os.path.join(trust_dir,fname)
+        if not os.path.isfile(fpath): continue
+        try:
+            data=open(fpath,'rb').read()
+            if pem.detect(data):
+                for _t,_h,der in pem.unarmor(data, multiple=True):
+                    certs.append(x509.Certificate.load(der))
+            else:
+                certs.append(x509.Certificate.load(data))
+        except Exception as e:
+            print(f"ADVERTENCIA: no se pudo cargar cert {fname}: {e}")
+    return certs
+
+def make_validation_context(trust_dir: Optional[str]) -> Optional[ValidationContext]:
+    try:
+        roots = load_certificates_from_dir(trust_dir)
+        if not roots:
+            return None
+        return ValidationContext(
+            trust_roots=roots,
+            other_certs=roots,
+            allow_fetching=True,
+            revocation_mode='soft-fail',
+        )
+    except Exception as e:
+        print(f"ADVERTENCIA: no se pudo construir ValidationContext: {e}")
+        return None
+
+def _ocr_image(png_path: str) -> str:
+    tess = os.environ.get('TESSERACT_CMD')
+    if tess: pytesseract.pytesseract.tesseract_cmd = tess
+    try:
+        text = pytesseract.image_to_string(Image.open(png_path), lang='spa+eng')
+        return re.sub(r"\s+"," ", text).strip()
+    except Exception as e:
+        return f"<OCR_ERROR: {e}>"
+
+def extract_signature_appearances(pdf_path: str, out_dir: str) -> List[Dict[str, Any]]:
+    ensure_dir(out_dir)
+    doc = fitz.open(pdf_path)
+    res=[]
+    base=os.path.splitext(os.path.basename(pdf_path))[0]
+    for pno in range(doc.page_count):
+        page=doc.load_page(pno)
+        rects=[]
+        try:
+            for w in (list(page.widgets()) or []):
+                ftype=str(getattr(w,'field_type','') or getattr(w,'ft','')).lower()
+                if 'sig' in ftype: rects.append(fitz.Rect(w.rect))
+        except Exception: pass
+        if not rects:
+            try:
+                a=page.first_annot
+                while a:
+                    try:
+                        subtype = (a.type[1] if isinstance(a.type,tuple) else str(a.type))
+                        if 'Widget' in str(subtype):
+                            info=a.info or {}
+                            ft=str(info.get('FT') or info.get('FieldType') or '').lower()
+                            fname=str(info.get('Field') or info.get('T') or '')
+                            if 'sig' in ft or fname.lower().endswith('sig'): rects.append(fitz.Rect(a.rect))
+                    except Exception: pass
+                    a=a.next
+            except Exception: pass
+        for idx, r in enumerate(rects):
+            pix = page.get_pixmap(matrix=fitz.Matrix(2,2), clip=r*1.1)
+            out_png=os.path.join(out_dir, f"{base}_p{pno+1}_sig{idx+1}.png"); pix.save(out_png)
+            ocr=_ocr_image(out_png)
+            with open(out_png.replace('.png','.txt'),'w',encoding='utf-8') as fh: fh.write(ocr)
+            res.append({"page":pno+1,"rect":[r.x0,r.y0,r.x1,r.y1],"image":out_png,"ocr_txt":ocr})
+    doc.close(); return res
+
+def validate_file_signatures(pdf_path: str, vc: Optional[ValidationContext]) -> Dict[str, Any]:
+    out={"file": pdf_path, "signatures": [], "errors": []}
+    try:
+        with open(pdf_path,'rb') as fh:
+            reader = PdfFileReader(fh, strict=False)
+            for idx, emb_sig in enumerate(reader.embedded_signatures, start=1):
+                st = validate_pdf_signature(emb_sig, vc)
+                entry = {
+                    "index": idx,
+                    "integrity_ok": getattr(st, 'intact', None) or getattr(st, 'valid', None),
+                    "trusted": getattr(st, 'trust_status', None) in (True, 'TRUSTED') or getattr(st,'trusted',None),
+                    "signing_time": getattr(st, 'signing_time', None),
+                    "errors": [], "warnings": []
+                }
+                try:
+                    scert = getattr(st, 'signer_cert', None)
+                    if scert is not None:
+                        try:
+                            subj = scert.subject.native
+                            entry["signer_name"] = subj.get('common_name') or subj.get('organization_name')
+                            entry["signer_cert_subject"] = subj
+                        except Exception:
+                            entry["signer_cert_subject"] = str(scert)
+                        try:
+                            entry["signer_cert_serial"] = getattr(scert,'serial_number',None) or getattr(scert,'serial',None)
+                        except Exception: pass
+                except Exception as e:
+                    entry["errors"].append(f"signer_cert parse error: {e}")
+                for attr in ("validation_errors","reporting_errors","failure_reasons"):
+                    v = getattr(st, attr, None)
+                    if v: entry["errors"].append(str(v))
+                for attr in ("validation_warnings","warnings"):
+                    v = getattr(st, attr, None)
+                    if v: entry["warnings"].append(str(v))
+                # --- Fallback signing_time cuando PyHanko no lo expone directamente ---
+
+                try:
+
+                    if not entry.get("signing_time"):
+
+                        # a) Intento desde atributos firmados CMS (OID 1.2.840.113549.1.9.5)
+
+                        si = getattr(emb_sig, 'signer_info', None)
+
+                        if si is not None:
+
+                            try:
+
+                                # asn1crypto.cms.SignerInfo['signed_attrs'] → lista de atributos
+
+                                attrs = None
+
+                                try:
+
+                                    attrs = si['signed_attrs']
+
+                                except Exception:
+
+                                    attrs = getattr(si, 'signed_attrs', None) or getattr(si, 'signed_attributes', None)
+
+                                if attrs:
+
+                                    for a in (list(attrs) if hasattr(attrs, '__iter__') else []):
+
+                                        try:
+
+                                            t = None
+
+                                            # distintos sabores: a['type'] puede tener .dotted o .native
+
+                                            if hasattr(a, 'native'):
+
+                                                t = a.native.get('type')
+
+                                            elif hasattr(a, 'dump'):
+
+                                                t = str(a['type'])
+
+                                            # aceptar por nombre o por OID exacta
+
+                                            if (t and 'signing_time' in str(t)) or str(getattr(a['type'],'dotted', '')) == '1.2.840.113549.1.9.5':
+
+                                                # valor puede venir en 'values'[0] o 'value'
+
+                                                val = None
+
+                                                try:
+
+                                                    vals = a.get('values', None)
+
+                                                    if vals: val = vals[0]
+
+                                                except Exception:
+
+                                                    pass
+
+                                                if val is None:
+
+                                                    try: val = a.get('value', None)
+
+                                                    except Exception: pass
+
+                                                if val is not None:
+
+                                                    try:
+
+                                                        entry['signing_time'] = getattr(val, 'native', val)
+
+                                                        break
+
+                                                    except Exception:
+
+                                                        entry['signing_time'] = str(val)
+
+                                                        break
+
+                                        except Exception:
+
+                                            pass
+
+                        # b) Intento desde diccionario PDF (/M)
+
+                        if not entry.get("signing_time"):
+
+                            try:
+
+                                sdict = getattr(emb_sig, 'sig_object', None) or getattr(emb_sig, 'sig_dict', None) or {}
+
+                                m = None
+
+                                if hasattr(sdict, 'get'):
+
+                                    m = sdict.get('/M') or sdict.get('M')
+
+                                if m:
+
+                                    entry['signing_time'] = str(m)
+
+                            except Exception:
+
+                                pass
+
+                except Exception:
+
+                    pass
+
+                
+
+                out["signatures"].append(entry)
+    except Exception as e:
+        out["errors"].append(f"validate_pdf_signature failed: {e}")
+    return out
+
+def write_json(path: str, obj: Any) -> None:
+    with open(path,'w',encoding='utf-8') as fh:
+        json.dump(obj, fh, ensure_ascii=False, indent=2, default=J)
+
+def build_text_report(batch: List[Dict[str, Any]], out_txt: str) -> None:
+    lines=["REPORTE DE VALIDACIÓN DE FIRMAS — CNEL_Verificador_CLI", f"Generado: {dt.datetime.now().isoformat()}\n"]
+    for item in batch:
+        f=item.get('file'); lines.append(f"Archivo: {f}")
+        sigs=item.get('signatures') or []
+        if not sigs:
+            errs=item.get('errors') or []
+            lines.append(f"  - Sin firmas detectadas o error de validación. Errores: {', '.join(map(str, errs)) if errs else 'N/A'}\n")
+            continue
+        for s in sigs:
+            lines.append(f"  - Firma #{s.get('index')} | Integridad: {'OK' if s.get('integrity_ok') else 'FALLA'} | Confiable: {'SÍ' if s.get('trusted') else 'NO'}")
+            lines.append(f"    Firmante: {s.get('signer_name','N/D')} | Serie: {s.get('signer_cert_serial')}")
+            lines.append(f"    Fecha firma: {s.get('signing_time','N/D')}")
+            warn=s.get('warnings') or []; err=s.get('errors') or []
+            if warn: lines.append(f"    Avisos: {'; '.join(map(str,warn))}")
+            if err:  lines.append(f"    Errores: {'; '.join(map(str,err))}")
+        lines.append("")
+    with open(out_txt,'w',encoding='utf-8') as fh: fh.write("\n".join(lines))
+
+def main():
+    ap=argparse.ArgumentParser(description="Valida firmas (untrusted+trusted) y extrae OCR de apariencias.")
+    ap.add_argument('src'); ap.add_argument('--trust', default=None); ap.add_argument('--out', default=None); args=ap.parse_args()
+
+    src=os.path.abspath(args.src)
+    if not os.path.isdir(src): raise SystemExit(f"SRC inválido: {src}")
+
+    out_root=os.path.abspath(args.out or os.path.join(os.getcwd(),'reports'))
+    out_dir=ensure_dir(os.path.join(out_root, now_stamp()))
+    out_imgs=ensure_dir(os.path.join(out_dir,'apariencias'))
+
+    print(f"SRC   : {src}"); print(f"TRUST : {args.trust or '<none>'}"); print(f"OUT   : {out_dir}")
+
+    pdfs=list_pdfs(src)
+    if not pdfs: raise SystemExit("No se encontraron PDFs en SRC.")
+
+    all_apps={}
+    for pdf in pdfs:
+        try:
+            apps=extract_signature_appearances(pdf, out_imgs)
+            all_apps[pdf]=apps
+        except Exception as e:
+            print(f"[OCR] {os.path.basename(pdf)} → ERROR: {e}")
+            all_apps[pdf]=[]
+
+    batch_untrusted=[validate_file_signatures(pdf, vc=None) for pdf in pdfs]
+    vc=make_validation_context(args.trust)
+    batch_trusted=[validate_file_signatures(pdf, vc=vc) for pdf in pdfs] if vc is not None else []
+
+    write_json(os.path.join(out_dir,'sig_untrusted.json'),
+               {"generated": dt.datetime.now(), "src": src, "count": len(batch_untrusted), "results": batch_untrusted, "appearances": all_apps})
+    if vc is not None:
+        write_json(os.path.join(out_dir,'sig_trusted.json'),
+                   {"generated": dt.datetime.now(), "src": src, "count": len(batch_trusted), "results": batch_trusted, "appearances": all_apps})
+
+    build_text_report(batch_trusted if batch_trusted else batch_untrusted, os.path.join(out_dir,'reporte_lote.txt'))
+
+    print("\nListo ✅")
+    print(f"- sig_untrusted.json → {os.path.join(out_dir,'sig_untrusted.json')}")
+    if vc is not None: print(f"- sig_trusted.json   → {os.path.join(out_dir,'sig_trusted.json')}")
+    print(f"- reporte_lote.txt   → {os.path.join(out_dir,'reporte_lote.txt')}")
+    print(f"- apariencias PNG/TXT→ {out_imgs}")
+
+
+if __name__ == '__main__':
+    # silencia trazas internas molestas
+    logging.getLogger("pyhanko").setLevel(logging.ERROR)
+    logging.getLogger("pyhanko_certvalidator").setLevel(logging.ERROR)
+    main()
+
+

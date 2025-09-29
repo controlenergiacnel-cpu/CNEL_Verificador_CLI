@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+pdf_text.py
+Unificador de extracción de texto:
+- Usa texto embebido si es suficiente.
+- Si no, OCR reforzado (tesseract -> easyocr fallback).
+- Devuelve además hints útiles para pipelines posteriores (is_scanned_hint).
+"""
+
+from __future__ import annotations
+import re, os
+from typing import Dict, Any, Tuple
+
+import fitz  # PyMuPDF
+from .ocr_engine import ocr_pdf_all_pages, OcrConfig
+
+
+EC_CI_REGEX = re.compile(r"\b\d{10}\b")
+EC_PHONE_REGEX = re.compile(r"\b09\d{8}\b|\b0[2-7]\d{7}\b")
+
+
+def _enough_text(txt: str) -> bool:
+    t = (txt or "").strip()
+    if len(t) >= 160:
+        return True
+    letters = sum(ch.isalpha() for ch in t)
+    ratio = (letters / max(1, len(t))) * 100.0
+    return ratio >= 35.0
+
+
+def extract_text(pdf_path: str, tesseract_path: str) -> Dict[str, Any]:
+    native_text = []
+    is_scanned_hint = False
+
+    with fitz.open(pdf_path) as doc:
+        for pno in range(len(doc)):
+            page = doc[pno]
+            t = page.get_text("text") or ""
+            native_text.append(t)
+
+    combined = "\n\n".join(native_text).strip()
+    if not _enough_text(combined):
+        is_scanned_hint = True
+        ocr_txt = ocr_pdf_all_pages(pdf_path, OcrConfig(
+            tesseract_path=tesseract_path,
+            langs="spa+eng",
+            dpi=380,
+            use_easyocr_fallback=True
+        ))
+        combined = ocr_txt if ocr_txt else combined
+
+    # Hints rápidos
+    ci_found = bool(EC_CI_REGEX.search(combined))
+    phone_found = bool(EC_PHONE_REGEX.search(combined))
+
+    return {
+        "text": combined,
+        "is_scanned_hint": is_scanned_hint,
+        "has_ec_cedula": ci_found,
+        "has_phone": phone_found
+    }
