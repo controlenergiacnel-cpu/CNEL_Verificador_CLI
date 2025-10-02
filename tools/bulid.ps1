@@ -1,0 +1,1 @@
+$ErrorActionPreference = "Stop"py -m pip install --upgrade pipif (Test-Path requirements.txt) { pip install -r requirements.txt }pip install pyinstallerif (Test-Path app.spec) {  py -m PyInstaller app.spec} else {  py -m PyInstaller -n CNEL_Verificador_CLI --onefile app/cli.py}Write-Host "Build listo en .\dist"

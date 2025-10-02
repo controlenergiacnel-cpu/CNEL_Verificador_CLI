@@ -1,82 +1,143 @@
-import os, sys, json, argparse, glob
-from loguru import logger
-from .core.ocr_engine import OcrConfig, configure_tesseract
-from .core.pdf_text import extract_text_from_pdf_or_image
-from .core.signatures_robust import verify_pdf_signatures_deep
-from .core.energy import extract_energy_values
-from .core.patterns import extract_basic_patterns
-from .core.director import find_director_mentions
-from .core.reporter import write_reports
-from .core.utils import file_sha256
+﻿# app/core/ocr_engine.py
+import os
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-def load_config(cfg_path='config/config.json'):
-    with open(cfg_path, 'r', encoding='utf-8-sig') as f:
-        return json.load(f)
+import fitz  # PyMuPDF
+import pytesseract
+from PIL import Image
 
-def gather_inputs(path: str):
-    if os.path.isdir(path):
-        files = sorted([p for p in glob.glob(os.path.join(path, '**', '*.*'), recursive=True)
-                        if p.lower().endswith(('.pdf','.png','.jpg','.jpeg','.tif','.tiff'))])
-        return files
-    return [path]
+# ------------ Config ------------
 
-def main():
-    ap = argparse.ArgumentParser(description='CNEL_Verificador CLI')
-    ap.add_argument('--input', required=True, help='Carpeta o archivo a procesar')
-    ap.add_argument('--no-ocr', action='store_true', help='Desactivar OCR (solo texto nativo PDF)')
-    args = ap.parse_args()
+@dataclass
+class OcrConfig:
+    enabled: bool = True
+    tesseract_bin: Optional[str] = None
+    langs: List[str] = None
+    min_chars_for_native: int = 80
+    raw: Dict[str, Any] = None
 
-    cfg = load_config()
-    ocr_cfg = OcrConfig(**cfg.get('ocr',{}))
-    if args.no_ocr: ocr_cfg.enabled = False
+    @staticmethod
+    def from_config(cfg: Dict[str, Any]) -> "OcrConfig":
+        text = cfg.get("text", {}) or {}
+        ocr = cfg.get("ocr", {}) or {}
+        tess = cfg.get("tesseract", {}) or {}
 
-    try: configure_tesseract(ocr_cfg.tesseract_bin)
-    except Exception as e: logger.warning(f'No se pudo configurar Tesseract: {e}')
+        force = bool(ocr.get("force", False))
+        enable_flag = bool(ocr.get("enable", True))
+        enabled = force or enable_flag
 
-    files = gather_inputs(args.input)
-    if not files:
-        logger.error('No se encontraron archivos admitidos en la ruta de entrada.')
-        sys.exit(2)
+        tesseract_bin = tess.get("cmd") or cfg.get("tesseract_bin")
 
-    results = []
-    for i, fpath in enumerate(files, 1):
-        logger.info(f'Procesando ({i}/{len(files)}): {fpath}')
-        rec = {'file_name': os.path.basename(fpath), 'file_path': fpath, 'sha256': file_sha256(fpath)}
+        langs = ocr.get("langs") or cfg.get("ocr_langs")
+        if isinstance(langs, str):
+            langs = [p for p in langs.replace("+", ",").split(",") if p.strip()]
+        if not langs:
+            langs = ["es", "en"]
+        langs = ["es" if x == "spa" else ("en" if x == "eng" else x) for x in langs]
+
+        min_chars = int(ocr.get("min_chars_for_native", text.get("min_chars_for_native", 80)))
+
+        return OcrConfig(
+            enabled=enabled,
+            tesseract_bin=tesseract_bin,
+            langs=langs,
+            min_chars_for_native=min_chars,
+            raw=cfg,
+        )
+
+def configure_tesseract(tesseract_bin: Optional[str]) -> None:
+    """Configura ruta de Tesseract si se especifica."""
+    if tesseract_bin and os.path.exists(tesseract_bin):
+        pytesseract.pytesseract.tesseract_cmd = tesseract_bin
+
+# ------------ Resultado OCR ------------
+
+@dataclass
+class ExtractResult:
+    text: str
+    is_scanned_hint: bool
+    page_text_lengths: List[int]
+    ocr_text_lengths: List[int]
+
+# ------------ Utilidades internas ------------
+
+def _pdf_has_native_text(pdf_path: str) -> bool:
+    try:
+        with fitz.open(pdf_path) as doc:
+            for page in doc:
+                if page.get_text().strip():
+                    return True
+    except Exception:
+        pass
+    return False
+
+def _ocr_image_pil(img: Image.Image, langs: List[str]) -> str:
+    lang = "+".join(langs) if langs else "spa+eng"
+    return pytesseract.image_to_string(img, lang=lang)
+
+# ------------ API pública usada por cli.py ------------
+
+def extract_text_from_pdf_or_image(path: str, cfg: OcrConfig) -> ExtractResult:
+    """
+    Lee texto nativo de PDF con PyMuPDF y, si no hay suficiente texto, hace OCR con Tesseract.
+    Para imágenes, solo OCR.
+    """
+    text = ""
+    is_scanned_hint = False
+    page_lens: List[int] = []
+    ocr_lens: List[int] = []
+
+    lower = path.lower()
+    if lower.endswith(".pdf"):
+        # 1) Texto nativo
+        native_text = []
         try:
-            ex = extract_text_from_pdf_or_image(fpath, ocr_cfg)
-            text = ex.text or ''
-            rec['is_scanned_hint'] = ex.is_scanned_hint
-            rec['page_text_lengths'] = ex.page_text_lengths
-            rec['ocr_text_lengths'] = ex.ocr_text_lengths
-        except Exception as e:
-            text = ''
-            rec['text_error'] = f'Error extrayendo texto: {e}'
+            with fitz.open(path) as doc:
+                for page in doc:
+                    t = page.get_text()
+                    native_text.append(t or "")
+                    page_lens.append(len(t or ""))
+        except Exception:
+            native_text = []
 
-        if fpath.lower().endswith('.pdf'):
+        text_native_joined = "\n".join(native_text)
+        has_native = len(text_native_joined) >= cfg.min_chars_for_native
+
+        # 2) OCR si no hay suficiente texto nativo y OCR está habilitado
+        if cfg.enabled and not has_native:
+            is_scanned_hint = True
             try:
-                rec['signature'] = verify_pdf_signatures_deep(fpath, cfg.get('validation',{}))
-            except Exception as e:
-                rec['signature'] = {'status_overall':'ERROR','signatures':[],'details':str(e)}
+                with fitz.open(path) as doc:
+                    ocr_text_pages = []
+                    for page in doc:
+                        pix = page.get_pixmap(dpi=200)
+                        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                        t = _ocr_image_pil(img, cfg.langs)
+                        ocr_text_pages.append(t or "")
+                        ocr_lens.append(len(t or ""))
+                text = "\n".join(ocr_text_pages)
+            except Exception:
+                # si el OCR falla, al menos devolvemos lo nativo
+                text = text_native_joined
         else:
-            rec['signature'] = {'status_overall':'N/A','signatures':[],'details':'No es PDF'}
+            text = text_native_joined
 
-        try: rec['energy'] = extract_energy_values(text)
-        except Exception as e: rec['energy'] = {'error': str(e)}
+    else:
+        # Imagen: OCR directo si enabled, si no, vacío
+        if cfg.enabled:
+            try:
+                img = Image.open(path)
+                text = _ocr_image_pil(img, cfg.langs)
+                ocr_lens.append(len(text or ""))
+            except Exception:
+                text = ""
+        else:
+            text = ""
 
-        try: rec['patterns'] = extract_basic_patterns(text, region_code='EC')
-        except Exception as e: rec['patterns'] = {'error': str(e)}
-
-        try:
-            director = cfg.get('director_comercial','')
-            aliases = cfg.get('director_aliases',[])
-            rec['director'] = find_director_mentions(text, director, aliases)
-        except Exception as e:
-            rec['director'] = {'error': str(e)}
-
-        results.append(rec)
-
-    write_reports(results, outdir='outputs')
-    logger.info('Listo. Revisa outputs/reporte_bonito.html | .txt | .md | resumen.txt')
-
-if __name__ == '__main__':
-    main()
+    return ExtractResult(
+        text=text or "",
+        is_scanned_hint=is_scanned_hint,
+        page_text_lengths=page_lens,
+        ocr_text_lengths=ocr_lens,
+    )
