@@ -1,11 +1,8 @@
-﻿build/
+﻿# build artifacts
+build/
 dist/
-.ocr_cache/
-venv*/
 *.spec
-*.exe
-*.dll
-*.pyd
 *.log
-*.pkg
-*.bundle
+.ocr_cache/
+# pyinstaller output
+**/_internal/
