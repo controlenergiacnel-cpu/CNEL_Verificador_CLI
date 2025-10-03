@@ -6,3 +6,22 @@ dist/
 .ocr_cache/
 # pyinstaller output
 **/_internal/
+# Build / empaquetado
+build/
+dist/
+*.exe
+*.pkg
+*.pyd
+*.dll
+
+# Repos/paquetes/espacios espejo
+cnel-mirror.git/
+*.pack
+*.idx
+*.bundle
+
+# Entornos locales
+venv*/
+.venv/
+__pycache__/
+*.log
